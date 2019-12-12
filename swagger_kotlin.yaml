@@ -1,0 +1,366 @@
+openapi: 3.0.0
+info:
+  title: RESTful API
+  description: 商品管理API
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:8080'
+    description: develop server
+tags:
+  - name: products
+    description: Product Rest Controller
+paths:
+  /product:
+    get:
+      tags:
+        - product
+      summary: 商品の全件検索
+      parameters:
+        - name: title
+          in: query
+          description: 取得したい商品の名前
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 取得した商品情報一覧をJSONで返す
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        '400':
+          description: BadRequestエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - product
+      summary: 商品の新規登録
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputForm'
+        required: true
+      responses:
+        '201':
+          description: 登録した商品情報をJSONで返す
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  '/api/products/{id}':
+    get:
+      security:
+        - Bearer: []
+      tags:
+        - product
+      summary: 商品情報の取得
+      parameters:
+        - name: id
+          in: path
+          description: 取得したい商品のID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: IDから商品の情報を返す
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: BadRequestエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    put:
+      tags:
+        - product
+      summary: 商品情報の更新
+      parameters:
+        - name: id
+          in: path
+          description: 変更したい商品のID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InputForm'
+        required: true
+      responses:
+        '200':
+          description: 更新した商品情報を返す
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: Validationエラー(その他BadRequest時には、descriptionsにエラー説明文が入ります)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+    delete:
+      tags:
+        - product
+      summary: 商品情報の削除
+      parameters:
+        - name: id
+          in: path
+          description: 削除したい商品のID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+        '400':
+          description: BadRequestエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+  '/product/{id}/imageUpload':
+    patch:
+      tags:
+        - product
+      summary: 商品画像の登録、更新
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                multipartFile:
+                  type: string
+                  format: binary
+        required: true
+      parameters:
+        - name: id
+          in: path
+          description: 画像変更したい商品のID
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: 画像を更新した商品情報を返す
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '400':
+          description: BadRequestエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: NotFoundエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: InternalServerエラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+components:
+  schemas:
+    Product:
+      type: object
+      required:
+        - id
+        - title
+        - opinion
+        - price
+        - createTime
+        - updateTime
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: 商品のid
+        title:
+          type: string
+          description: 商品名
+          example: Product Name
+        opinion:
+          type: string
+          description: 商品の説明文
+          example: Product Description
+        price:
+          type: integer
+          format: int32
+          description: 商品の価格
+          example: 2000
+        imgPath:
+          type: string
+          description: 商品画像の保管場所のパス
+          example: xxxxxxx.jpeg
+        createTime:
+          type: string
+          format: date
+          example: '2019-10-01'
+        updateTime:
+          type: string
+          format: date
+          example: '2019-10-01'
+    InputForm:
+      type: object
+      required:
+        - title
+        - description
+        - price
+      properties:
+        title:
+          type: string
+          description: 商品名
+          minLength: 1
+          maxLength: 100
+          example: Product Name
+        opinion:
+          type: string
+          description: 商品説明文
+          minLength: 1
+          maxLength: 500
+          example: Product Description
+        price:
+          type: integer
+          format: int32
+          description: 商品の価格
+          minimum: 0
+          example: 1000
+    BadRequest:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          example: BAD_REQUEST
+        message:
+          type: string
+          example: 不正なリクエストです
+    ValidationError:
+      type: object
+      required:
+        - status
+        - message
+        - details
+      properties:
+        status:
+          type: string
+          example: BAD_REQUEST
+        message:
+          type: string
+          example: バリデーションエラーが発生しました
+        details:
+          type: string
+          example:
+            title: 商品名を入力してください
+            description: 商品説明文を入力してください
+            price: 商品価格を入力してください
+    NotFound:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          example: NOT_FOUND
+        message:
+          type: string
+          example: 要求したリソースが見つかりませんでした
+    InternalServerError:
+      type: object
+      required:
+        - status
+        - message
+      properties:
+        status:
+          type: string
+          example: INTERNAL_SERVER_ERROR
+        message:
+          type: string
+          example: Internal Server Error

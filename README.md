@@ -6,42 +6,43 @@
 - MySQL
 - Swagger Editer
 
-##API設計
+## API設計
 
 ### API仕様書（Swagger.yaml)
 
-###商品の全件取得
+### 商品の全件取得
 
 GET /product</li>
 
-###商品をIDから取得
+### 商品をIDから取得
 
 GET /product/{id}
 
-###商品の新規登録
+### 商品の新規登録
 
 POST /product
 
-###商品の更新
+### 商品の更新
 
 PUT /product/{id}
 
-###商品の削除
+### 商品の削除
 
 DELETE /product/{id}
 
-###商品の検索
+### 商品の検索
 
 GET /product/search/{title}
 
-###商品画像の登録
+### 商品画像の登録
 
 POST /product/{id}/imageUpload
 
 
 ###DB設計
 
-####Products
+#### Products
+
 | カラム名 | 型 | NULL | KEY | その他 |
 | :-----------: |:-----------:| :------: | :------: | :-------:|
 | id | int | NO | PRIMARY | auto_increment |
@@ -54,19 +55,19 @@ POST /product/{id}/imageUpload
 
 ##開発環境のセットアップ手順
 
-###Java8 インストール
+### Java8 インストール
 ```sh
 brew cask install java8 
 export JAVA_HOME=`/usr/libexec/java_home -v 1.8`
 ```
 
-###Gradle, Mysql インストール
+### Gradle, Mysql インストール
 ```sh
 brew install mysql gradle
 ```
 
 
-###MySQLでデーダベースを用意
+### MySQLでデーダベースを用意
 
 最初にMySQL で、apiという名前のデータベースを用意する。
 ```sh
